@@ -1,5 +1,6 @@
 install:
-	apt install libopencv-dev clang libclang-dev &&\
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh &&\
+	#sudo apt install libopencv-dev clang libclang-dev &&\
 	wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin &&\
 	sudo mv cuda-ubuntu1804.pin /etc/apt/preferences.d/cuda-repository-pin-600 &&\
 	wget https://developer.download.nvidia.com/compute/cuda/11.7.0/local_installers/cuda-repo-ubuntu1804-11-7-local_11.7.0-515.43.04-1_amd64.deb &&\
@@ -10,7 +11,8 @@ install:
 	rm -rf libtorch &&\
 	wget https://download.pytorch.org/libtorch/cu117/libtorch-cxx11-abi-shared-with-deps-1.13.1%2Bcu117.zip &&\
 	unzip libtorch-cxx11-abi-shared-with-deps-1.13.1+cu117.zip &&\
-	rm -rf libtorch-cxx11-abi-shared-with-deps-1.13.1+cu117.zip
+	rm -rf libtorch-cxx11-abi-shared-with-deps-1.13.1+cu117.zip &&\
+	echo 'export TORCH_CUDA_VERSION="cu117"' >> ~/.bashrc
 format:
 	cargo fmt --quiet
 
