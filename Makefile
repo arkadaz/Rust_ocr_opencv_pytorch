@@ -1,18 +1,19 @@
 install:
+	sudo apt update -y &&\
+	sudo apt upgrade -y &&\
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh &&\
-	#sudo apt install libopencv-dev clang libclang-dev &&\
-	wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin &&\
-	sudo mv cuda-ubuntu1804.pin /etc/apt/preferences.d/cuda-repository-pin-600 &&\
-	wget https://developer.download.nvidia.com/compute/cuda/11.7.0/local_installers/cuda-repo-ubuntu1804-11-7-local_11.7.0-515.43.04-1_amd64.deb &&\
-	sudo dpkg -i cuda-repo-ubuntu1804-11-7-local_11.7.0-515.43.04-1_amd64.deb &&\
-	sudo cp /var/cuda-repo-ubuntu1804-11-7-local/cuda-*-keyring.gpg /usr/share/keyrings/ &&\
-	sudo apt-get update &&\
-	sudo apt-get -y install cuda &&\
+	sudo apt install libopencv-dev clang libclang-dev &&\
+	wget https://developer.download.nvidia.com/compute/cuda/12.1.1/local_installers/cuda_12.1.1_530.30.02_linux.run &&\
+	sudo sh cuda_12.1.1_530.30.02_linux.run &&\
+	rm -rf cuda_12.1.1_530.30.02_linux.run &&\
 	rm -rf libtorch &&\
 	wget https://download.pytorch.org/libtorch/cu117/libtorch-cxx11-abi-shared-with-deps-1.13.1%2Bcu117.zip &&\
 	unzip libtorch-cxx11-abi-shared-with-deps-1.13.1+cu117.zip &&\
 	rm -rf libtorch-cxx11-abi-shared-with-deps-1.13.1+cu117.zip &&\
-	echo 'export TORCH_CUDA_VERSION="cu117"' >> ~/.bashrc
+	echo 'export TORCH_CUDA_VERSION="cu117"' >> ~/.bashrc &&\
+	echo 'export LIBTORCH="/home/arkadaz/Test_rust/Rust_ocr_opencv_pytorch/libtorch"' >> ~/.bashrc &&\
+	echo 'export LD_LIBRARY_PATH=${LIBTORCH}/lib' >> ~/.bashrc
+
 format:
 	cargo fmt --quiet
 
@@ -23,12 +24,13 @@ test:
 	cargo test --quiet
 
 clean:
-	#cargo install cargo-cache
-	#cargo cache -a
-	#rm -rf Cargo.lock
+	cargo install cargo-cache
+	cargo cache -a
+	rm -rf Cargo.lock
 	cargo clean
 
 run:
-	cargo run 
+	cargo build -j 8
+	cargo run --release
 
-all: install format lint test run
+all: install clean format lint test run
